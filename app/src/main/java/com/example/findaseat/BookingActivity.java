@@ -1,13 +1,11 @@
 package com.example.findaseat;
 
 import android.os.Bundle;
-import android.widget.TextView;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import android.view.MenuItem;
 
 public class BookingActivity extends AppCompatActivity {
 
@@ -16,11 +14,21 @@ public class BookingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_booking); // Set this to your layout XML for BookingActivity
 
+        // Set up the ActionBar's home button for navigation
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
+        // Set up the back button
+        Button backButton = findViewById(R.id.btn_back);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // This will simulate the hardware back button being pressed
+                onBackPressed();
+            }
+        });
     }
 
     // Override the onBackPressed method
@@ -30,7 +38,6 @@ public class BookingActivity extends AppCompatActivity {
         // Optionally, add any additional code if needed
         // For example, if you want to add animations or log analytics events.
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
