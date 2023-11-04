@@ -19,6 +19,10 @@ public class BuildingAdapter extends RecyclerView.Adapter<BuildingAdapter.Buildi
         this.buildingList = buildingList;
     }
 
+    public interface OnBuildingSelectedListener {
+        void onBuildingSelected(Building building);
+    }
+
     @Override
     public BuildingViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())

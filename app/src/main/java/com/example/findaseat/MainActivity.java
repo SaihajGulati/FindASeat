@@ -65,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
         if (backButton != null) {
             backButton.setVisibility(View.GONE);
         }
+
+        buildingAdapter = new BuildingAdapter(buildingList); // 'this' refers to MainActivity which implements OnBuildingSelectedListener
+        buildingsRecyclerView.setAdapter(buildingAdapter);
     }
 
     private void populateBuildingData(DatabaseReference buildingsRef) {
@@ -125,7 +128,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
+    public void onBuildingSelected(Building selectedBuilding) {
+        Intent intent = new Intent(MainActivity.this, BookingActivity.class);
+        intent.putExtra("BUILDING", selectedBuilding); // selectedBuilding should implement Serializable
+        startActivity(intent);
+    }
 
 
 }
