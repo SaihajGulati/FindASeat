@@ -18,19 +18,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,12 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button backButton = findViewById(R.id.btn_back);
         if (backButton != null) {
-            backButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onBackPressed(); // Or MainActivity.this.finish();
-                }
-            });
+            backButton.setVisibility(View.GONE);
         }
     }
 
@@ -145,4 +129,3 @@ public class MainActivity extends AppCompatActivity {
 
 
 }
-
