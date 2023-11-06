@@ -77,26 +77,26 @@ public class User {
         reservations.add(0, r);
     }
 
-    public void cancelActiveReservation() {
-        Reservation r = activeReservation();
-        if (r.getStatus() == com.example.FindASeat.ReservationStatus.ACTIVE) {
-            r.setStatus(com.example.FindASeat.ReservationStatus.CANCELLED);
-        }
-    }
-
-    public void updateActiveReservation(Reservation r) {
-        com.example.FindASeat.ReservationStatus ReservationStatus = null;
-        if (reservations.size() > 0 && reservations.get(0).getStatus() == ReservationStatus.ACTIVE) {
-            reservations.set(0, r);
-        }
-    }
-
-    public Reservation activeReservation() {
-        Reservation r = reservations.get(0);
-        com.example.FindASeat.ReservationStatus ReservationStatus = null;
-        if (r.getStatus() == ReservationStatus.ACTIVE) {
-            return r;
-        }
-        return null;
-    }
+//    public void cancelActiveReservation() {
+//        Reservation r = activeReservation();
+//        if (r.getStatus() == com.example.FindASeat.ReservationStatus.ACTIVE) {
+//            r.setStatus(com.example.FindASeat.ReservationStatus.CANCELLED);
+//        }
+//    }
+//
+//    public void updateActiveReservation(Reservation r) {
+//        com.example.FindASeat.ReservationStatus ReservationStatus = null;
+//        if (reservations.size() > 0 && reservations.get(0).getStatus() == ReservationStatus.ACTIVE) {
+//            reservations.set(0, r);
+//        }
+//    }
+//
+//    public Reservation activeReservation() {
+//        Reservation r = reservations.get(0);
+//        com.example.FindASeat.ReservationStatus ReservationStatus = null;
+//        if (r.getStatus() == ReservationStatus.ACTIVE) {
+//            return r;
+//        }
+//        return null;
+//    }
 }

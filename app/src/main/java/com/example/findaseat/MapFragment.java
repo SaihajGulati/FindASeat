@@ -1,6 +1,9 @@
 package com.example.findaseat;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +20,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private GoogleMap mMap;
 
     @Override
@@ -32,6 +35,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        mMap.setOnMarkerClickListener(this);
 
         // Create LatLng objects for the markers
         LatLng marker1 = new LatLng(34.021865809296685, -118.28290555239819);
@@ -84,5 +89,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         LatLngBounds bounds = builder.build();
         int padding = 100; // Padding around markers in pixels
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Log.d("TEST", "clicked");
+        //instantiate an intent for the BookingActivity
+        Context context = requireContext();
+
+        Intent intent = new Intent(context, BookingActivity.class);
+
+        for (int i = 0; i < 10; i++)
+        {
+            String target = "Marker " + (i+1);
+            if (marker.getTitle().equals(target))
+            {
+                intent.putExtra("BUILDING_ID", "marker" + (i+1));
+                // Start the activity
+                startActivity(intent);
+                return true;
+            }
+        }
+        return false;
+
     }
 }
