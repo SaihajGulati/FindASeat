@@ -21,6 +21,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".BookingActivity"></activity>
+        <activity android:name=".BuildingDetailActivity">
+            <!-- Any other properties for the activity -->
+        </activity>
+
+
+
     </application>
+
 
 </manifest>
