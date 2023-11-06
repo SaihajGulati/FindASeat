@@ -1,36 +1,32 @@
 package com.example.findaseat;
 
 public class TimeSlot {
+    private String id;
+    private String startTime; // You might want to use a Date object or a custom Time object in a real app
+    private String endTime;
+    private int availableSeats;
 
-    private String time;
-    private boolean isAvailable;
-
-    // Constructor
-    public TimeSlot(String time, boolean isAvailable) {
-        this.time = time;
-        this.isAvailable = isAvailable;
+    public TimeSlot(String id, String startTime, String endTime, int availableSeats) {
+        this.id = id;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.availableSeats = availableSeats;
     }
 
-    // Getters and Setters
-    public String getTime() {
-        return time;
+    // Getters and setters
+    public String getId() {
+        return id;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public String getStartTime() {
+        return startTime;
     }
 
-    public boolean isAvailable() {
-        return isAvailable;
+    public String getEndTime() {
+        return endTime;
     }
 
-    public void setAvailable(boolean available) {
-        isAvailable = available;
-    }
-
-    // toString Method
-    @Override
-    public String toString() {
-        return "Time: " + (time != null ? time : "Not Set") + ", Available: " + isAvailable;
+    public int getAvailableSeats() {
+        return availableSeats;
     }
 }
