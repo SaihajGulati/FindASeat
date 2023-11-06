@@ -1,32 +1,46 @@
 package com.example.findaseat;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.time.LocalTime;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+public class BookingActivity extends AppCompatActivity implements TimeSlotAdapter.OnTimeSlotClickListener {
 
-public class BookingActivity extends AppCompatActivity {
+    private ListView lvTimeSlots;
+    private TextView tvBuildingDescription;
+    private TextView tvSeatAvailability;
 
-    private TextView buildingNameTextView;
-    private TextView buildingDescriptionTextView;
-    private Building building;
+    // A list to hold time slots for display
+    private ArrayList<TimeSlot> timeSlotsList;
+    private ArrayAdapter<TimeSlot> adapter;
 
-    private RecyclerView timeSlotsRecyclerView;
-    private TimeSlotAdapter timeSlotAdapter;
-    private List<TimeSlot> timeSlotList; // You need to define this list
+    private String building;
+
+    private View tvBuildingId;
+    private RecyclerView rvTimeSlots;
 
 
     @Override
@@ -35,76 +49,144 @@ public class BookingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_booking);
 
 
-        buildingNameTextView = findViewById(R.id.buildingNameTextView);
-        buildingDescriptionTextView = findViewById(R.id.buildingDescriptionTextView);
-        TextView numberOfSeatsView = findViewById(R.id.numberOfSeats);
+        // Initialize components and layout views
+        initializeUI();
 
-        // Initialize your RecyclerView here
-        timeSlotsRecyclerView = findViewById(R.id.recycler_view_time_slots); // Replace with your actual RecyclerView ID
-
-        // Initialize your timeSlotList with TimeSlot objects
-        timeSlotList = new ArrayList<>();
-
-        timeSlotList = createTimeSlotDummyData();
-
-// Convert your List<TimeSlot> to List<String>
-        List<String> timeSlotStrings = new ArrayList<>();
-        for(TimeSlot timeSlot : timeSlotList) {
-            timeSlotStrings.add(timeSlot.toString()); // replace getTimeSlotString() with your actual method
-        }
-
-// Now you can set up the RecyclerView with the adapter
-        timeSlotAdapter = new TimeSlotAdapter(timeSlotStrings);
-        timeSlotsRecyclerView.setAdapter(timeSlotAdapter);
-        timeSlotsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-
+        // Retrieve the building ID passed from MainActivity
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("BUILDING")) {
-            building = (Building) intent.getSerializableExtra("BUILDING"); // Ensure that Building class implements Serializable
 
-            if(building != null) {
-                // Now that we have confirmed building is not null, it's safe to call methods on it
-                int numberOfSeats = building.getNumberOfSeats(); // This should be your own method to get the actual number
-                String seatsText = "Number of Seats Available: " + numberOfSeats;
-                numberOfSeatsView.setText(seatsText);
-
-                // Set the building name and description on the TextViews
-                buildingNameTextView.setText(building.getBuildingName());
-                buildingDescriptionTextView.setText(building.getDescription());
-            } else {
-                // Handle the case where the building object is still null even if the intent has "BUILDING" extra
-                Toast.makeText(this, "Building data is unavailable.", Toast.LENGTH_LONG).show();
+        if (intent != null) {
+            String buildingId = intent.getStringExtra("BUILDING_ID");
+            if (buildingId != null && !buildingId.isEmpty()) {
+                // Use the building ID to load the appropriate time slots and prepare the UI
+                loadBuildingDetails(buildingId);
             }
-        } else {
-            // Handle the case where there is no building data passed
-            Toast.makeText(this, "No building information provided!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    private void initializeUI() {
+        tvBuildingId = findViewById(R.id.tvBuildingId);
+        rvTimeSlots = findViewById(R.id.rvTimeSlots);
+
+        // Set up the RecyclerView with a LinearLayoutManager and an adapter (you need to define the adapter)
+        rvTimeSlots.setLayoutManager(new LinearLayoutManager(this));
+        // Assuming you have a TimeSlotAdapter class that takes in a list of TimeSlot objects
+        rvTimeSlots.setAdapter(new TimeSlotAdapter(new ArrayList<>(), this));
+
+        // Initialize other UI components as necessary
+    }
+
+    private void loadBuildingDetails(String buildingId) {
+        tvBuildingId.setText(String.format("Building ID: %s", buildingId));
+
+        // Fetch the time slots for the building from Firebase
+        fetchTimeSlots(buildingId);
+    }
+
+    //interface for accessing building stuff from backend
+    private void fetchTimeSlots(String buildingId) {
+        // Placeholder for Firebase call or another data source retrieval
+        // This method would be responsible for fetching time slots and notifying the adapter
+        List<TimeSlot> timeSlots = new ArrayList<TimeSlot>();
+
+        // Suppose you get a list of TimeSlot objects from Firebase
+        // After fetching data, update the RecyclerView's adapter
+        TimeSlotAdapter adapter = (TimeSlotAdapter) rvTimeSlots.getAdapter();
+        if (adapter != null) {
+            adapter.setTimeSlots(timeSlots);  // You'll need to create this method in your adapter
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+
+
+    private void reserveTimeSlot(TimeSlot slot) {
+        // Check if the user is logged in
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            // Not logged in
+            Toast.makeText(this, "You must be logged in to make a reservation.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        Button btnBack = findViewById(R.id.btn_back);
-        btnBack.setOnClickListener(new View.OnClickListener() {
+        // Assuming TimeSlot has a unique ID we can use to identify it in the database
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("reservations").child(slot.getId());
+
+        // Check for existing reservation
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                // Finish the current activity
-                finish();
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // If there is no existing reservation for this slot, proceed
+                if (!dataSnapshot.exists()) {
+                    // Create a reservation object
+                    Reservation reservation = new Reservation(user.getUid(), slot.getId(), 45);
+
+                    // Push the reservation to the database
+                    ref.setValue(reservation)
+                            .addOnSuccessListener(aVoid -> {
+                                // Update the UI to reflect the new reservation
+                                Toast.makeText(BookingActivity.this, "Reservation made successfully!", Toast.LENGTH_SHORT).show();
+                                updateSeatAvailability(slot);
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(BookingActivity.this, "Failed to make reservation: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                } else {
+                    Toast.makeText(BookingActivity.this, "This time slot is already reserved.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(BookingActivity.this, "Error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private String formatTime(int hour, int minute) {
-        return String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
+    private void updateSeatAvailability(TimeSlot time) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("buildings").child(building).child("timeSlots").child(time.getId());
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Assuming there is a count for indoor and outdoor seats
+                long indoorAvailable = (long) dataSnapshot.child("indoorAvailable").getValue();
+                long outdoorAvailable = (long) dataSnapshot.child("outdoorAvailable").getValue();
+
+                // Update the TextView with the current availability
+                tvSeatAvailability.setText(String.format(Locale.getDefault(), "Seats Available: Indoor - %d, Outdoor - %d", indoorAvailable, outdoorAvailable));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(BookingActivity.this, "Error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private List<TimeSlot> createTimeSlotDummyData() {
-        List<TimeSlot> dummyList = new ArrayList<>();
 
-        // Use the formatTime method to create time strings
-        dummyList.add(new TimeSlot(formatTime(9, 0), true));
-        dummyList.add(new TimeSlot(formatTime(10, 0), true));
-
-        // ... more dummy data
-
-        return dummyList;
+    @Override
+    public void onTimeSlotClick(TimeSlot timeSlot) {
+        // Handle the time slot click event by showing a dialog
+        showReservationDialog(timeSlot, building);
     }
 
+    private void showReservationDialog(final TimeSlot timeSlot, String building) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirm Reservation");
+        builder.setMessage("Reserve a seat from " + timeSlot.getStartTime() + " to " + timeSlot.getEndTime() + "?");
+
+        builder.setPositiveButton("Reserve", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Here you would handle the reservation confirmation
+                // For example, update the Firebase database with the new reservation
+                reserveTimeSlot(timeSlot);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 }

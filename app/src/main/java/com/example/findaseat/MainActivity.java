@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         // Create Building instances and add them to the buildingList
         populateBuildingData(buildingsRef);
 
-        buildingAdapter = new BuildingAdapter(buildingList);
+        buildingAdapter = new BuildingAdapter(this, buildingList);
         buildingsRecyclerView.setAdapter(buildingAdapter);
 
         // Setup the booking button if it's in activity_main.xml
