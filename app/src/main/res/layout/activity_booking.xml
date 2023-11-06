@@ -5,15 +5,18 @@
     android:layout_height="match_parent">
 
     <!-- RecyclerView for time slots -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_time_slots"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="399dp"
+        android:layout_height="267dp"
+        android:paddingTop="16dp"
         app:layout_constraintBottom_toTopOf="@id/btn_booking"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/numberOfSeats"
-        android:paddingTop="16dp"/>
+        app:layout_constraintVertical_bias="0.335" />
 
     <Button
         android:id="@+id/btn_back"
@@ -36,35 +39,36 @@
 
 
     <TextView
-        android:id="@+id/buildingNameTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Building Name"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recycler_view_time_slots"
-        android:layout_marginTop="16dp" />
-
-    <TextView
         android:id="@+id/buildingDescriptionTextView"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Description"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buildingNameTextView"
-        android:layout_marginTop="8dp" />
+        android:paddingTop="50dp"
+        tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/numberOfSeats"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Number of Seats: "
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btn_booking"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp" />
+        android:paddingTop="20dp"
+        tools:ignore="MissingConstraints" />
+
+
+    <TextView
+        android:id="@+id/buildingNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="50dp"
+        android:text="Building Name"
+
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="170dp"
+        tools:layout_editor_absoluteY="82dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

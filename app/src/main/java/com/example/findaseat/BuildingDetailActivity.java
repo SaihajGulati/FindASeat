@@ -12,7 +12,6 @@ public class BuildingDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_building_detail); // Ensure you have a layout file named activity_building_detail.xml
 
         buildingNameTextView = findViewById(R.id.buildingName); // Ensure you have a TextView with this ID in your layout
 
