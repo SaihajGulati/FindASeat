@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,119 +7,22 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:menu="@menu/bottom_navigation_menu"
-        android:layout_alignParentBottom="true"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-    <ImageView
-        android:id="@+id/mapImageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitCenter"
-        android:src="@drawable/map"
-        android:visibility="visible" />
-
-    <Button
-        android:id="@+id/targetButton2"
-        android:layout_width="20dp"
-        android:layout_height="15dp"
-        android:layout_marginLeft="265dp"
-        android:layout_marginTop="320dp"
-        android:text="Target 2"
-        android:onClick="onBuildingClicked"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/targetButton3"
-        android:layout_width="20dp"
-        android:layout_height="15dp"
-        android:layout_marginLeft="216dp"
-        android:layout_marginTop="310dp"
-        android:text="Target 3"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/targetButton4"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:onClick="onBuildingClicked"
-        android:layout_marginLeft="205dp"
-        android:layout_marginTop="355dp"
-        android:text="Target 4"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/targetButton5"
-        android:onClick="onBuildingClicked"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginLeft="175dp"
-        android:layout_marginTop="290dp"
-        android:text="Target 5"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/targetButton6"
-        android:layout_width="20dp"
-        android:layout_height="15dp"
-        android:layout_marginLeft="220dp"
-        android:layout_marginTop="435dp"
-        android:onClick="onBuildingClicked"
-        android:text="Target 6"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/targetButton7"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginLeft="73dp"
-        android:layout_marginTop="420dp"
-        android:text="Target 7"
-        android:onClick="onBuildingClicked"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/targetButton8"
-        android:layout_width="20dp"
-        android:layout_height="15dp"
-        android:layout_marginLeft="87dp"
-        android:layout_marginTop="450dp"
-        android:onClick="onBuildingClicked"
-        android:text="Target 8"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/targetButton9"
-        android:layout_width="20dp"
-        android:onClick="onBuildingClicked"
-        android:layout_height="15dp"
-        android:layout_marginLeft="75dp"
-        android:layout_marginTop="495dp"
-        android:text="Target 9"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/targetButton10"
-        android:layout_width="20dp"
-        android:layout_height="15dp"
-        android:layout_marginLeft="182dp"
-        android:layout_marginTop="530dp"
-        android:onClick="onBuildingClicked"
-        android:text="Target 10"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/targetButton1"
-        android:layout_width="20dp"
-        android:layout_height="15dp"
-        android:layout_marginLeft="292dp"
-        android:layout_marginTop="525dp"
-        android:onClick="onBuildingClicked"
-        android:text="Target 1"
-        android:visibility="invisible" />
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
