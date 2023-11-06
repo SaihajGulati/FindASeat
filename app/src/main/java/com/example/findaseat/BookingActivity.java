@@ -9,6 +9,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 
 public class BookingActivity extends AppCompatActivity {
@@ -17,14 +24,40 @@ public class BookingActivity extends AppCompatActivity {
     private TextView buildingDescriptionTextView;
     private Building building;
 
+    private RecyclerView timeSlotsRecyclerView;
+    private TimeSlotAdapter timeSlotAdapter;
+    private List<TimeSlot> timeSlotList; // You need to define this list
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_booking);
 
+
         buildingNameTextView = findViewById(R.id.buildingNameTextView);
         buildingDescriptionTextView = findViewById(R.id.buildingDescriptionTextView);
         TextView numberOfSeatsView = findViewById(R.id.numberOfSeats);
+
+        // Initialize your RecyclerView here
+        timeSlotsRecyclerView = findViewById(R.id.recycler_view_time_slots); // Replace with your actual RecyclerView ID
+
+        // Initialize your timeSlotList with TimeSlot objects
+        timeSlotList = new ArrayList<>();
+
+        timeSlotList = createTimeSlotDummyData();
+
+// Convert your List<TimeSlot> to List<String>
+        List<String> timeSlotStrings = new ArrayList<>();
+        for(TimeSlot timeSlot : timeSlotList) {
+            timeSlotStrings.add(timeSlot.toString()); // replace getTimeSlotString() with your actual method
+        }
+
+// Now you can set up the RecyclerView with the adapter
+        timeSlotAdapter = new TimeSlotAdapter(timeSlotStrings);
+        timeSlotsRecyclerView.setAdapter(timeSlotAdapter);
+        timeSlotsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("BUILDING")) {
@@ -56,6 +89,22 @@ public class BookingActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private String formatTime(int hour, int minute) {
+        return String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
+    }
+
+    private List<TimeSlot> createTimeSlotDummyData() {
+        List<TimeSlot> dummyList = new ArrayList<>();
+
+        // Use the formatTime method to create time strings
+        dummyList.add(new TimeSlot(formatTime(9, 0), true));
+        dummyList.add(new TimeSlot(formatTime(10, 0), true));
+
+        // ... more dummy data
+
+        return dummyList;
     }
 
 }

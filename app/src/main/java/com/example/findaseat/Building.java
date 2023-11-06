@@ -86,8 +86,6 @@ public class Building implements Serializable {
     }
 
 
-
-
     public int getNumberOfSeats() {
         return numberOfSeats;
     }
@@ -98,6 +96,10 @@ public class Building implements Serializable {
 
     public String getBuildingName() {
         return buildingName;
+    }
+
+    public String getId() {
+        return buildingID;
     }
 
     public void setBuildingName(String buildingName) {
