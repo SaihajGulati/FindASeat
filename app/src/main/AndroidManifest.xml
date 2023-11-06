@@ -26,6 +26,10 @@
             <!-- Any other properties for the activity -->
         </activity>
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAFg7b_FBfnFPFN0FdIlsVglhHhOebIl_4" />
+
 
 
     </application>
