@@ -39,7 +39,7 @@ public class BookingActivity extends AppCompatActivity implements TimeSlotAdapte
 
     private String building;
 
-    private View tvBuildingId;
+    private TextView tvBuildingId;
     private RecyclerView rvTimeSlots;
 
 
@@ -59,14 +59,14 @@ public class BookingActivity extends AppCompatActivity implements TimeSlotAdapte
             String buildingId = intent.getStringExtra("BUILDING_ID");
             if (buildingId != null && !buildingId.isEmpty()) {
                 // Use the building ID to load the appropriate time slots and prepare the UI
-                loadBuildingDetails(buildingId);
+                building = buildingId;
             }
         }
     }
 
 
     private void initializeUI() {
-        tvBuildingId = findViewById(R.id.tvBuildingId);
+        tvBuildingId = (TextView) findViewById(R.id.tvBuildingId);
         rvTimeSlots = findViewById(R.id.rvTimeSlots);
 
         // Set up the RecyclerView with a LinearLayoutManager and an adapter (you need to define the adapter)
@@ -77,15 +77,15 @@ public class BookingActivity extends AppCompatActivity implements TimeSlotAdapte
         // Initialize other UI components as necessary
     }
 
-    private void loadBuildingDetails(String buildingId) {
-        tvBuildingId.setText(String.format("Building ID: %s", buildingId));
+    private void loadBuildingDetails() {
+        tvBuildingId.setText(String.format("Building ID: %s", building));
 
         // Fetch the time slots for the building from Firebase
-        fetchTimeSlots(buildingId);
+        fetchTimeSlots();
     }
 
     //interface for accessing building stuff from backend
-    private void fetchTimeSlots(String buildingId) {
+    private void fetchTimeSlots() {
         // Placeholder for Firebase call or another data source retrieval
         // This method would be responsible for fetching time slots and notifying the adapter
         List<TimeSlot> timeSlots = new ArrayList<TimeSlot>();
@@ -167,10 +167,10 @@ public class BookingActivity extends AppCompatActivity implements TimeSlotAdapte
     @Override
     public void onTimeSlotClick(TimeSlot timeSlot) {
         // Handle the time slot click event by showing a dialog
-        showReservationDialog(timeSlot, building);
+        showReservationDialog(timeSlot);
     }
 
-    private void showReservationDialog(final TimeSlot timeSlot, String building) {
+    private void showReservationDialog(final TimeSlot timeSlot) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Confirm Reservation");
         builder.setMessage("Reserve a seat from " + timeSlot.getStartTime() + " to " + timeSlot.getEndTime() + "?");
