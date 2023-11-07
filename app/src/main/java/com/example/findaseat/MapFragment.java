@@ -104,7 +104,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             String target = "Marker " + (i+1);
             if (marker.getTitle().equals(target))
             {
-                intent.putExtra("BUILDING_ID", "marker" + (i+1));
+                intent.putExtra("BUILDING_ID", "b" + (i+1));
                 // Start the activity
                 startActivity(intent);
                 return true;
