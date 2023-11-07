@@ -1,102 +1,61 @@
 package com.example.findaseat;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class User {
-    private ArrayList<Reservation> reservations;
-    private String fullName;
-    private String uscId;
-    private String username;
-    private String affiliation;
-    private String email;
+    public String name;
+    public String usc_id;
+    public String email;
+    public String affiliation;
+    public String avatarURL;
+    public String pwd;
+    public ArrayList<TimeSlot> timeSlots;
+    public Reservation currentReservation;
 
-    public User() {
-        reservations = new ArrayList<Reservation>();
-        fullName = "";
-        uscId = "0000000000";
-        username = "";
-        affiliation = "";
-        email = "";
-    }
-    public User(String fullName, String uscId, String username, String email, String affiliation) {
-        reservations = new ArrayList<Reservation>();
-        this.fullName = fullName;
-        this.uscId = uscId;
-        this.username = username;
-        this.email = email;
-        this.affiliation = affiliation;
+    User() {
+        name = null;
+        usc_id = null;
+        email = null;
+        avatarURL= null;
+        affiliation = null;
+        pwd = null;
+        timeSlots = new ArrayList<TimeSlot>();
+        currentReservation = null;
     }
 
-    public ArrayList<Reservation> getReservations() {
-        return reservations;
+    User(String e, String id, String n, String a, String p, String u, ArrayList<TimeSlot> timeSlots) {
+        name = n;
+        usc_id = id;
+        email = e;
+        affiliation = a;
+        pwd = p;
+        avatarURL = u;
+        timeSlots = new ArrayList<TimeSlot>();
+        currentReservation = null;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getName() {
+        return name;
     }
 
-    public String getUscId() {
-        return uscId;
+    public String getUsc_id() {
+        return usc_id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
-
-    public String getEmail() { return email; }
 
     public String getAffiliation() {
         return affiliation;
     }
 
-    public void setReservations(ArrayList<Reservation> reservations) {
-        this.reservations = reservations;
+    public String getPwd() {
+        return pwd;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
 
-    public void setUscId(String uscId) {
-        this.uscId = uscId;
-    }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
-    public void setEmail(String email) { this.email = email; }
-    public void setAffiliation(String affiliation) {
-        this.affiliation = affiliation;
-    }
-
-    public void addReservation(Reservation r) {
-        if (reservations.size() == 20) {
-            reservations.remove(19);
-        }
-        reservations.add(0, r);
-    }
-
-//    public void cancelActiveReservation() {
-//        Reservation r = activeReservation();
-//        if (r.getStatus() == com.example.FindASeat.ReservationStatus.ACTIVE) {
-//            r.setStatus(com.example.FindASeat.ReservationStatus.CANCELLED);
-//        }
-//    }
-//
-//    public void updateActiveReservation(Reservation r) {
-//        com.example.FindASeat.ReservationStatus ReservationStatus = null;
-//        if (reservations.size() > 0 && reservations.get(0).getStatus() == ReservationStatus.ACTIVE) {
-//            reservations.set(0, r);
-//        }
-//    }
-//
-//    public Reservation activeReservation() {
-//        Reservation r = reservations.get(0);
-//        com.example.FindASeat.ReservationStatus ReservationStatus = null;
-//        if (r.getStatus() == ReservationStatus.ACTIVE) {
-//            return r;
-//        }
-//        return null;
-//    }
 }

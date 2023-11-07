@@ -1,16 +1,14 @@
 package com.example.findaseat;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity{
@@ -30,14 +28,16 @@ public class MainActivity extends AppCompatActivity{
                 loadFragment(new MapFragment());
                 return true;
             } else if (item.getItemId() == R.id.menu_profile) {
-                loadFragment(new ProfileFragment());
+                loadFragment(new LoginFragment());
+                return true;
+            } else if (item.getItemId() == R.id.menu_registration) {
+                // Handle navigation to the RegistrationFragment
+                loadFragment(new Register());
                 return true;
             }
             return false;
         });
-
     }
-
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragmentContainer, fragment);

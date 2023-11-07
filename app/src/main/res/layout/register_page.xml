@@ -1,0 +1,64 @@
+<!-- Replace with your desired XML layout for the sign-up form -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Add UI elements for the sign-up form (EditText, ImageView, Button, etc.) -->
+    <EditText
+        android:id="@+id/signup_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email"
+    />
+
+    <EditText
+        android:id="@+id/uscid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="USC ID"
+        />
+
+    <EditText
+        android:id="@+id/signup_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Name"
+        />
+
+
+    <EditText
+        android:id="@+id/signup_affiliation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Affiliation"
+        />
+
+
+    <EditText
+        android:id="@+id/idsignup_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        />
+
+
+
+    <!-- Add an ImageView for the avatar (you can use your own custom ImageView) -->
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/default_avatar"
+        android:scaleType="centerCrop"
+        />
+
+    <!-- Add a Button for signing up -->
+    <Button
+        android:id="@+id/signup_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign Up"
+        />
+</LinearLayout>

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -32,6 +33,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         return view;
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -51,44 +53,43 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         LatLng marker10 = new LatLng(34.02034212290399, -118.28366121747526);
 
         // Add markers to the map
-        MarkerOptions markerOptions1 = new MarkerOptions().position(marker1).title("Marker 1");
-        MarkerOptions markerOptions2 = new MarkerOptions().position(marker2).title("Marker 2");
-        MarkerOptions markerOptions3 = new MarkerOptions().position(marker3).title("Marker 3");
-        MarkerOptions markerOptions4 = new MarkerOptions().position(marker4).title("Marker 4");
-        MarkerOptions markerOptions5 = new MarkerOptions().position(marker5).title("Marker 5");
-        MarkerOptions markerOptions6 = new MarkerOptions().position(marker6).title("Marker 6");
-        MarkerOptions markerOptions7 = new MarkerOptions().position(marker7).title("Marker 7");
-        MarkerOptions markerOptions8 = new MarkerOptions().position(marker8).title("Marker 8");
-        MarkerOptions markerOptions9 = new MarkerOptions().position(marker9).title("Marker 9");
-        MarkerOptions markerOptions10 = new MarkerOptions().position(marker10).title("Marker 10");
+        mMap.addMarker(new MarkerOptions().position(marker1).title("Marker 1"));
+        mMap.addMarker(new MarkerOptions().position(marker2).title("Marker 2"));
+        mMap.addMarker(new MarkerOptions().position(marker3).title("Marker 3"));
+        mMap.addMarker(new MarkerOptions().position(marker4).title("Marker 4"));
+        mMap.addMarker(new MarkerOptions().position(marker5).title("Marker 5"));
+        mMap.addMarker(new MarkerOptions().position(marker6).title("Marker 6"));
+        mMap.addMarker(new MarkerOptions().position(marker7).title("Marker 7"));
+        mMap.addMarker(new MarkerOptions().position(marker8).title("Marker 8"));
+        mMap.addMarker(new MarkerOptions().position(marker9).title("Marker 9"));
+        mMap.addMarker(new MarkerOptions().position(marker10).title("Marker 10"));
 
-        Marker marker1New = mMap.addMarker(markerOptions1);
-        Marker marker2New = mMap.addMarker(markerOptions2);
-        Marker marker3New = mMap.addMarker(markerOptions3);
-        Marker marker4New = mMap.addMarker(markerOptions4);
-        Marker marker5New = mMap.addMarker(markerOptions5);
-        Marker marker6New = mMap.addMarker(markerOptions6);
-        Marker marker7New = mMap.addMarker(markerOptions7);
-        Marker marker8New = mMap.addMarker(markerOptions8);
-        Marker marker9New = mMap.addMarker(markerOptions9);
-        Marker marker10New = mMap.addMarker(markerOptions10);
+        // Use a `ViewTreeObserver` to ensure that the map layout has occurred
+        View mapView = getView();
+        if (mapView != null) {
+            mapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                    builder.include(marker1);
+                    builder.include(marker2);
+                    builder.include(marker3);
+                    builder.include(marker4);
+                    builder.include(marker5);
+                    builder.include(marker6);
+                    builder.include(marker7);
+                    builder.include(marker8);
+                    builder.include(marker9);
+                    builder.include(marker10);
+                    LatLngBounds bounds = builder.build();
+                    int padding = 100; // Padding around markers in pixels
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
 
-        // Move the camera to a position that shows all markers
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        builder.include(marker1New.getPosition());
-        builder.include(marker2New.getPosition());
-        builder.include(marker3New.getPosition());
-        builder.include(marker4New.getPosition());
-        builder.include(marker5New.getPosition());
-        builder.include(marker6New.getPosition());
-        builder.include(marker7New.getPosition());
-        builder.include(marker8New.getPosition());
-        builder.include(marker9New.getPosition());
-        builder.include(marker10New.getPosition());
-
-        LatLngBounds bounds = builder.build();
-        int padding = 100; // Padding around markers in pixels
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+                    // Remove the listener to avoid multiple calls
+                    mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            });
+        }
     }
 
     @Override
@@ -111,6 +112,5 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             }
         }
         return false;
-
     }
 }

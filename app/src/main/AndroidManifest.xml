@@ -25,6 +25,9 @@
         <activity android:name=".BuildingDetailActivity">
             <!-- Any other properties for the activity -->
         </activity>
+        <activity android:name=".ProfileActivity">
+            <!-- Any other properties for the activity -->
+        </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
