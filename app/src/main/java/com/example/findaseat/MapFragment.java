@@ -61,7 +61,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         // Center map on markers if needed
         if (shouldResetCamera) {
-            centerMapOnMarkers();
+            final View mapView = getChildFragmentManager().findFragmentById(R.id.mapFragment).getView();
+            if (mapView != null && mapView.getViewTreeObserver().isAlive()) {
+                mapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        // Remove the listener so we don't keep getting callbacks
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                            mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        } else {
+                            mapView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        }
+
+                        // Now that the layout is complete, we can safely set the camera to include all markers
+                        centerMapOnMarkers();
+                    }
+                });
+            }
         }
     }
 
