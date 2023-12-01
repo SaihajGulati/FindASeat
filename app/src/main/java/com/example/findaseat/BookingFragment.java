@@ -41,7 +41,6 @@ public class BookingFragment extends Fragment implements TimeSlotAdapter.OnReser
     private TextView tvSeatAvailability;
 
     // A list to hold time slots for display
-    private ArrayList<Boolean> timeSlotsList;
     private ArrayAdapter<TimeSlot> adapter;
 
     private ValueEventListener indoorSlotsListener;
@@ -154,6 +153,7 @@ public class BookingFragment extends Fragment implements TimeSlotAdapter.OnReser
                 for (DataSnapshot d : dataSnapshot.getChildren()) {
                     Integer num = d.getValue(Integer.class);
                     if (num != null) {
+                        //this is the seats per slot available
                         indoorSlots.add(num);
                     }
                 }
@@ -176,7 +176,6 @@ public class BookingFragment extends Fragment implements TimeSlotAdapter.OnReser
                         outdoorSlots.add(num);
                     }
                 }
-                Log.d("outdoorslots", outdoorSlots.toString());
                 updateRecyclerView();
             }
 
@@ -200,7 +199,17 @@ public class BookingFragment extends Fragment implements TimeSlotAdapter.OnReser
                     Integer open = task.getResult().getValue(Integer.class);
                     if (open != null) {
                         Log.d("OPEN", open.toString());
-                        adapter.setTimeSlots(indoorSlots, outdoorSlots, open);
+                        ref.child("close").get().addOnCompleteListener(task2 -> {
+                            if (task2.isSuccessful()) {
+                                Integer close = task2.getResult().getValue(Integer.class);
+                                if (close != null) {
+                                    Log.d("CLOSE", close.toString());
+                                    adapter.setTimeSlots(indoorSlots, outdoorSlots, open, close, building);
+                                }
+                            } else {
+                                Log.e("firebase", "Error getting 'open' value", task.getException());
+                            }
+                        });
                     }
                 } else {
                     Log.e("firebase", "Error getting 'open' value", task.getException());
@@ -212,81 +221,104 @@ public class BookingFragment extends Fragment implements TimeSlotAdapter.OnReser
 
     private void reserveTimeSlot(TimeSlot slot, boolean isIndoor) {
         // Assuming TimeSlot has a unique ID we can use to identify it in the database
-        DatabaseReference slotRef = FirebaseDatabase.getInstance().getReference("buildings").child(building);
         String slotType = isIndoor ? "indoorSlots" : "outdoorSlots";
-        timeSlotsList.add(true);
-        DatabaseReference slotTypeRef = slotRef.child(slotType).child(String.valueOf(slot.getId()));
+        DatabaseReference slotTypeRef = ref.child(slotType).child(String.valueOf(slot.getId()));
+        slotTypeRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Integer currentSeats = task.getResult().getValue(Integer.class);
+                if (currentSeats != null && currentSeats > 0) {
+                    DatabaseReference userTimeslotsRef = usrdb.child("timeSlots");
+                    userTimeslotsRef.push().setValue(slot, new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            if (databaseError == null) {
+                                // Successfully added the timeslot to the user's list
+                                Toast.makeText(getContext(), "Time slot reserved successfully!", Toast.LENGTH_SHORT).show();
+                                // Decrement the seat count
+                                slotTypeRef.setValue(currentSeats - 1);
+                            } else {
+                                // Failed to add the timeslot to the user's list
+                                Log.e("firebase", "Failed to add timeslot to user's list", databaseError.toException());
+                                Toast.makeText(getContext(), "Failed to reserve time slot.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                } else {
+                    // Handle the case where there are no seats available
+                    Toast.makeText(getContext(), "No seats available.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Log.e("firebase", "Error getting data", task.getException());
+            }
+        });
+    }
+
+
+    @Override
+    public void onReserveButtonClick(TimeSlot selectedTimeSlot) {
         if (isLoggedIn)
         {
-            slotTypeRef.get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Integer currentSeats = task.getResult().getValue(Integer.class);
-                    if (currentSeats != null && currentSeats > 0) {
-                        DatabaseReference userTimeslotsRef = usrdb.child("timeSlots");
-                        userTimeslotsRef.push().setValue(slot, new DatabaseReference.CompletionListener() {
-                            @Override
-                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                                if (databaseError == null) {
-                                    // Successfully added the timeslot to the user's list
-                                    Toast.makeText(getContext(), "Time slot reserved successfully!", Toast.LENGTH_SHORT).show();
-                                    // Decrement the seat count
-                                    slotTypeRef.setValue(currentSeats - 1);
-                                } else {
-                                    // Failed to add the timeslot to the user's list
-                                    Log.e("firebase", "Failed to add timeslot to user's list", databaseError.toException());
-                                    Toast.makeText(getContext(), "Failed to reserve time slot.", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-                    } else {
-                        // Handle the case where there are no seats available
-                        Toast.makeText(getContext(), "No seats available.", Toast.LENGTH_SHORT).show();
+            DatabaseReference userTimeslotsRef = usrdb.child("timeSlots");
+
+            userTimeslotsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    boolean handled = false; //false by default, only becomes true if is consecutive
+                    if (dataSnapshot.getValue() == null) //means none yet so can ofc make one then
+                    {
+                        handled = true;
+                        showReservationDialog(selectedTimeSlot);
                     }
-                } else {
-                    Log.e("firebase", "Error getting data", task.getException());
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        TimeSlot existingTimeSlot = snapshot.getValue(TimeSlot.class);
+
+                        //need to check are consecutive at same building
+                        if (existingTimeSlot != null) {
+                            Log.d("existing end", existingTimeSlot.getEndTime().toString());
+                            Log.d("new start", selectedTimeSlot.getStartTime().toString());
+                            Log.d("building existing", existingTimeSlot.getBuilding().toString());
+                            Log.d("building new", selectedTimeSlot.getBuilding().toString());
+                            if ((selectedTimeSlot.getEndTime().equals(existingTimeSlot.getStartTime()) ||
+                                    selectedTimeSlot.getStartTime().equals(existingTimeSlot.getEndTime())) && selectedTimeSlot.getBuilding().equals(existingTimeSlot.getBuilding()))  {
+                                // This means the selected time slot is immediately before or after an existing reservation
+                                handled = true;
+                                showReservationDialog(selectedTimeSlot);
+                                break;
+                            }
+
+                            //if is same starting or same ending, means already have covering this one
+                            if (selectedTimeSlot.getStartTime().equals(existingTimeSlot.getStartTime()) ||
+                                    selectedTimeSlot.getEndTime().equals(existingTimeSlot.getEndTime())) {
+                                handled = true;
+                                Toast.makeText(getContext(), "You already have a reservation at this time.", Toast.LENGTH_SHORT).show();
+                                break;
+                            }
+                        }
+                    }
+
+                    //only case where get here is if none of them overlap in any way
+                    //so no full overlap or none that are right before or after either
+                    if (!handled) {
+                        Toast.makeText(getContext(), "You can only reserve consecutive time slots in the same building.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("firebase", "Error checking timeslot", databaseError.toException());
                 }
             });
+
         }
         else
         {
             Toast.makeText(getContext(), "Please login to make a reservation!", Toast.LENGTH_SHORT).show();
         }
-
     }
 
-
-    @Override
-    public void onReserveButtonClick(TimeSlot timeSlot) {
-        // Check if the timeslot is already taken by querying the Firebase database
-        DatabaseReference userTimeslotsRef = usrdb.child("timeSlots");
-        timeSlotsList.add(true);
-
-        userTimeslotsRef.orderByChild("startTime").equalTo(timeSlot.getStartTime()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // If the dataSnapshot has children, it means the timeslot is already taken
-                if (dataSnapshot.exists() && dataSnapshot.hasChildren()) {
-                    Toast.makeText(getContext(), "You already have a reservation at this time.", Toast.LENGTH_SHORT).show();
-
-
-                } else {
-                    // If the dataSnapshot does not exist or is empty, the timeslot is not taken
-                    // Proceed with reservation
-                    showReservationDialog(timeSlot);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Handle possible errors.
-                Log.e("firebase", "Error checking timeslot", databaseError.toException());
-            }
-        });
-    }
 
     private void showReservationDialog(final TimeSlot timeSlot) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        timeSlotsList.add(true);
         builder.setTitle("Confirm Reservation");
         builder.setMessage("Select your reservation type:");
 

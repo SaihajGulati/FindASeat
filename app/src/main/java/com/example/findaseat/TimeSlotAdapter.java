@@ -1,5 +1,10 @@
 package com.example.findaseat;
 
+import static java.lang.Double.parseDouble;
+
+import android.icu.text.DateFormat;
+import android.icu.text.SimpleDateFormat;
+import android.icu.util.Calendar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.view.LayoutInflater;
@@ -56,16 +62,17 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
         holder.bind(timeSlot, reserveButtonClickListener);
     }
 
+
     @Override
     public int getItemCount() {
         return openSlots.size();
     }
 
-    public void setTimeSlots(List<Integer> indoorSlots, List<Integer> outdoorSlots, double open) {
+    public void setTimeSlots(List<Integer> indoorSlots, List<Integer> outdoorSlots, double open, double close, String building) {
 
         //must convert to timeslots and then put in here
-        List<TimeSlot> slots = makeTimeSlots(indoorSlots, outdoorSlots, open);
-        for (int i = 0; i < outdoorSlots.size(); i++)
+        List<TimeSlot> slots = makeTimeSlots(indoorSlots, outdoorSlots, open, close, building);
+        for (int i = 0; i < slots.size(); i++)
         {
             if (slots.get(i).getIndoorSeats() > 0 || slots.get(i).getOutdoorSeats() > 0)
             {
@@ -76,20 +83,49 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
         notifyDataSetChanged();
     }
 
-    private List<TimeSlot> makeTimeSlots(List<Integer> indoorSlots, List<Integer> outdoorSlots, double open) {
+    private List<TimeSlot> makeTimeSlots(List<Integer> indoorSlots, List<Integer> outdoorSlots, double open, double close, String buildingId) {
 
         List<TimeSlot> times = new ArrayList<>();
-        for (int i = 0; i < indoorSlots.size(); i++)
-        {
-            double startTime = i*0.5 + open;
-            double endTime = startTime + 0.5;
-            String start = convTimeToString(startTime);
-            String end = convTimeToString(endTime);
 
-            TimeSlot ts = new TimeSlot(i, start, end, outdoorSlots.get(i), indoorSlots.get(i));
-            times.add(ts);
-        }
+        DateFormat dateFormat = new SimpleDateFormat("hh:mm");
+        Date date = Calendar.getInstance().getTime();
+        String currDate = dateFormat.format(date).toString();
+        //get the hours
+        double currTime = parseDouble(currDate.substring(0,2));
+        //get the minutes and then decimalize it and and add it to hours
+        currTime += parseDouble(currDate.substring(3))/60;
 
+
+        //if is between opening and closing times, need to filter out ones before
+        if (currTime > open && currTime < close) {
+            for (int i = 0; i < indoorSlots.size(); i++) {
+                //calculates startTime of this slot
+                double startTime = i * 0.5 + open;
+
+                //only add as timeslot if this slot starts after the current time
+                if (startTime > currTime) {
+                    double endTime = startTime + 0.5;
+                    String start = convTimeToString(startTime);
+                    String end = convTimeToString(endTime);
+
+                    TimeSlot ts = new TimeSlot(i, start, end, outdoorSlots.get(i), indoorSlots.get(i), buildingId);
+                    times.add(ts);
+                }
+            }
+        } else //means don't filter out bc isn't between opening and closing time
+            {
+                for (int i = 0; i < indoorSlots.size(); i++) {
+                    //calculates startTime of this slot
+                    double startTime = i * 0.5 + open;
+                    //only add as timeslot if this slot starts after the current time
+                    double endTime = startTime + 0.5;
+                    String start = convTimeToString(startTime);
+                    String end = convTimeToString(endTime);
+
+                    TimeSlot ts = new TimeSlot(i, start, end, outdoorSlots.get(i), indoorSlots.get(i), buildingId);
+                    times.add(ts);
+                }
+            }
         return times;
     }
 
@@ -101,8 +137,13 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
 
         double minutes = time - hour;
 
+        //only handles midnight case since checks first
+        if (hour == 0 || hour == 24)
+        {
+            hour = 12;
+        }
 
-        if (hour >= 12)
+        else if (hour >= 12)
         {
             end = " PM";
         }

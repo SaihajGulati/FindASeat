@@ -56,7 +56,7 @@ public class Register extends Fragment {
                 String affiliation = affiliationEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
                 ArrayList<TimeSlot> timeSlots = new ArrayList<>();
-                timeSlots.add(new TimeSlot(34, "7:00","7:30", 345, 345 ));
+                //timeSlots.add(new TimeSlot(34, "7:00","7:30", 345, 345 ));
 
                 signup(email, uscID, name, affiliation, password, timeSlots);
 
