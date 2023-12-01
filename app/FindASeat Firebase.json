@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "52816225320",
+    "firebase_url": "https://project-e87f1-default-rtdb.firebaseio.com",
+    "project_id": "project-e87f1",
+    "storage_bucket": "project-e87f1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:52816225320:android:bc31d6171f8bb2ea97c11d",
+        "android_client_info": {
+          "package_name": "com.example.findaseat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAS9PxBoN-lXiz6GtRRvChn_K0lgQCV44"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
