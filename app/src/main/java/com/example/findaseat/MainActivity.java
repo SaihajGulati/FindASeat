@@ -30,6 +30,13 @@ public class MainActivity extends AppCompatActivity{
 
     private static boolean test = false;
 
+    private MapFragment mapF;
+
+    private LoginFragment loginF;
+    private Register registerF;
+
+    private ProfileFragment profileF;
+
     private static boolean clear = false;
 
     public static void setTest()
@@ -91,13 +98,15 @@ public class MainActivity extends AppCompatActivity{
         Log.d("TEST", "HI");
         setContentView(R.layout.activity_main);
 
+        mapF = new MapFragment();
+
         // Set the default launch screen as the "Map" tab
-        loadFragment(new MapFragment(), null);
+        loadFragment(mapF, null);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.menu_map) {
-                loadFragment(new MapFragment(), null);
+                loadFragment(mapF, null);
                 return true;
             } else if (item.getItemId() == R.id.menu_profile) {
                 isLoggedIn = sharedPreferences.getBoolean("loggedIn",false);
@@ -109,13 +118,25 @@ public class MainActivity extends AppCompatActivity{
                     args.putString("name", currentUserName); // Replace with actual name
                     String currentUserAffiliation = sharedPreferences.getString("affiliation", "");
                     args.putString("affiliation", currentUserAffiliation); // Replace with actual affiliation
-                    loadFragment(new ProfileFragment(), args);
+                    if (profileF == null)
+                    {
+                        profileF = new ProfileFragment();
+                    }
+                    loadFragment(profileF, args);
                 } else {
-                    loadFragment(new LoginFragment(), null);
+                    if (loginF == null)
+                    {
+                        loginF = new LoginFragment();
+                    }
+                    loadFragment(loginF, null);
                 }
                 return true;
             } else if (item.getItemId() == R.id.menu_registration) {
-                loadFragment(new Register(), null);
+                if (registerF == null)
+                {
+                    registerF = new Register();
+                }
+                loadFragment(registerF, null);
                 return true;
             }
 

@@ -13,12 +13,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -26,11 +28,30 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private GoogleMap mMap;
     private boolean shouldResetCamera = true;
 
+    private static CameraPosition lastCameraPosition;
+
     public int markerCount = 0;
+
+    int padding;
+
+    LatLngBounds bounds;
+
+    private LatLng marker1;
+    private LatLng marker2;
+    private LatLng marker3;
+    private LatLng marker4;
+    private LatLng marker5;
+    private LatLng marker6;
+    private LatLng marker7;
+    private LatLng marker8;
+    private LatLng marker9;
+    private LatLng marker10;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -82,40 +103,40 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     }
 
     private void setUpMapMarkers() {
-        LatLng marker1 = new LatLng(34.021865809296685, -118.28290555239819);
+        marker1 = new LatLng(34.021865809296685, -118.28290555239819);
         markerCount++;
-        LatLng marker10 = new LatLng(34.01938251014455, -118.28802783249421);
+        marker10 = new LatLng(34.01938251014455, -118.28802783249421);
         markerCount++;
-        LatLng marker2 = new LatLng(34.022459610740896, -118.2846137481577);
+        marker2 = new LatLng(34.022459610740896, -118.2846137481577);
         markerCount++;
-        LatLng marker3 = new LatLng(34.01885966276545, -118.28236688864008);
+        marker3 = new LatLng(34.01885966276545, -118.28236688864008);
         markerCount++;
-        LatLng marker4 = new LatLng(34.0194553025335, -118.28636741932233);
+        marker4 = new LatLng(34.0194553025335, -118.28636741932233);
         markerCount++;
-        LatLng marker5 = new LatLng(34.0221659806183, -118.28382143281647);
+        marker5 = new LatLng(34.0221659806183, -118.28382143281647);
         markerCount++;
-        LatLng marker6 = new LatLng(34.01883507161909, -118.28427272586752);
+        marker6 = new LatLng(34.01883507161909, -118.28427272586752);
         markerCount++;
-        LatLng marker7 = new LatLng(34.02052886472203, -118.28458389728337);
+        marker7 = new LatLng(34.02052886472203, -118.28458389728337);
         markerCount++;
-        LatLng marker8 = new LatLng(34.02055969234863, -118.28632231747535);
+        marker8 = new LatLng(34.02055969234863, -118.28632231747535);
         markerCount++;
-        LatLng marker9 = new LatLng(34.02034212290399, -118.28366121747526);
+        marker9 = new LatLng(34.02034212290399, -118.28366121747526);
         markerCount++;
 
         int[] mapMarkers = new int[2];
         mapMarkers(mapMarkers);
 
-        mMap.addMarker(new MarkerOptions().position(marker1).title("Marker 1"));
-        mMap.addMarker(new MarkerOptions().position(marker9).title("Marker 9"));
-        mMap.addMarker(new MarkerOptions().position(marker2).title("Marker 2"));
-        mMap.addMarker(new MarkerOptions().position(marker3).title("Marker 3"));
-        mMap.addMarker(new MarkerOptions().position(marker4).title("Marker 4"));
-        mMap.addMarker(new MarkerOptions().position(marker5).title("Marker 5"));
-        mMap.addMarker(new MarkerOptions().position(marker6).title("Marker 7"));
-        mMap.addMarker(new MarkerOptions().position(marker7).title("Marker 7"));
-        mMap.addMarker(new MarkerOptions().position(marker8).title("Marker 8"));
-        mMap.addMarker(new MarkerOptions().position(marker10).title("Marker 10"));
+        mMap.addMarker(new MarkerOptions().position(marker1).title("1"));
+        mMap.addMarker(new MarkerOptions().position(marker9).title("9"));
+        mMap.addMarker(new MarkerOptions().position(marker2).title("2"));
+        mMap.addMarker(new MarkerOptions().position(marker3).title("3"));
+        mMap.addMarker(new MarkerOptions().position(marker4).title("4"));
+        mMap.addMarker(new MarkerOptions().position(marker5).title("5"));
+        mMap.addMarker(new MarkerOptions().position(marker6).title("6"));
+        mMap.addMarker(new MarkerOptions().position(marker7).title("7"));
+        mMap.addMarker(new MarkerOptions().position(marker8).title("8"));
+        mMap.addMarker(new MarkerOptions().position(marker10).title("10"));
 
     }
 
@@ -123,41 +144,60 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     private void centerMapOnMarkers() {
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        builder.include(new LatLng(34.021865809296685, -118.28290555239819));
-        builder.include(new LatLng(34.01938251014455, -118.28802783249421));
-        builder.include(new LatLng(34.022459610740896, -118.2846137481577));
-        builder.include(new LatLng(34.01885966276545, -118.28236688864008));
-        builder.include(new LatLng(34.0194553025335, -118.28636741932233));
-        builder.include(new LatLng(34.0221659806183, -118.28382143281647));
-        builder.include(new LatLng(34.01883507161909, -118.28427272586752));
-        builder.include(new LatLng(34.02052886472203, -118.28458389728337));
-        builder.include(new LatLng(34.02055969234863, -118.28632231747535));
-        builder.include(new LatLng(34.02034212290399, -118.28366121747526));
 
-        LatLngBounds bounds = builder.build();
-        int padding = 100; // Padding around markers in pixels
+        if (bounds == null)
+        {
+            builder.include(marker1);
+            builder.include(marker2);
+            builder.include(marker3);
+            builder.include(marker4);
+            builder.include(marker5);
+            builder.include(marker6);
+            builder.include(marker7);
+            builder.include(marker8);
+            builder.include(marker9);
+            builder.include(marker10);
+            bounds = builder.build();
+            padding = 100; // Padding around markers in pixels
+        }
+
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
     }
 
     @Override
-    public boolean onMarkerClick(Marker marker) {
+    public void onPause() {
+        super.onPause();
+        // Store the current camera position
+        lastCameraPosition = mMap.getCameraPosition();
+    }
 
-        Log.d("TEST", "clicked");
-        //instantiate an intent for the BookingActivity
-        Context context = requireContext();
-        Intent intent = new Intent(context, BookingActivity.class);
-
-        for (int i = 0; i < 10; i++) {
-            String target = "Marker " + (i + 1);
-            if (marker.getTitle().equals(target)) {
-                intent.putExtra("BUILDING_ID", "b" + (i + 1));
-                // Start the activity
-                startActivity(intent);
-                initializeLocationServices();
-                return true;
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mMap != null) {
+            if (lastCameraPosition != null) {
+                mMap.moveCamera(CameraUpdateFactory.newCameraPosition(lastCameraPosition));
+            } else {
+                centerMapOnMarkers();
             }
         }
-        return false;
+    }
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        // When a marker is clicked, show the BookingFragment
+        BookingFragment bookingFragment = new BookingFragment();
+        Bundle args = new Bundle();
+        args.putString("BUILDING_ID", "b" + marker.getTitle());
+        bookingFragment.setArguments(args);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, bookingFragment)
+                .addToBackStack(null)
+                .commit();
+
+        return true;
     }
 
     public boolean initializeLocationServices() {
