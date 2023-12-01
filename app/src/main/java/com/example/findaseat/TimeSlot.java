@@ -11,13 +11,16 @@ public class TimeSlot {
     private int outdoorSeats;
     private String building;
 
-    public TimeSlot(int id, String startTime, String endTime, int outdoorSeats, int indoorSeats, String buildingId) {
+    private String buildingName;
+
+    public TimeSlot(int id, String startTime, String endTime, int outdoorSeats, int indoorSeats, String building, String buildingName) {
         this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
         this.indoorSeats = indoorSeats;
         this.outdoorSeats = outdoorSeats;
-        this.building = buildingId;
+        this.building = building;
+        this.buildingName = buildingName;
 
     }
 
@@ -102,5 +105,9 @@ public class TimeSlot {
 
     public String getBuilding() {
         return building;
+    }
+
+    public String getBuildingName() {
+        return buildingName;
     }
 }

@@ -32,6 +32,8 @@ import java.util.List;
 public class ReservationsFragment extends Fragment implements TimeSlotAdapterShow.OnButtonClickListener{
 
     DatabaseReference usrdb;
+
+    DatabaseReference ref;
     String usc_id;
 
     public ReservationsFragment() {
@@ -78,7 +80,6 @@ public class ReservationsFragment extends Fragment implements TimeSlotAdapterSho
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 timeSlots.clear();
-
                 // Iterate over the snapshots and add them to your list
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     TimeSlot timeSlot = snapshot.getValue(TimeSlot.class);
@@ -114,8 +115,33 @@ public class ReservationsFragment extends Fragment implements TimeSlotAdapterSho
         showReservationDialog(timeSlot, "cancel");
     }
 
-
     private void showReservationDialog(final TimeSlot timeSlot, String type) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Would you like to change or cancel your reservation?");
+
+        // Check availability and add buttons accordingly
+        builder.setPositiveButton("Change", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                cancelReservation(timeSlot);
+                Toast.makeText(getContext(), "Old Reservation Cancelled. Please select a building to begin booking another", Toast.LENGTH_SHORT).show();
+                    navigateToMainMap();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                cancelReservation(timeSlot);
+                Toast.makeText(getContext(), "Reservation Cancelled", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    /*private void showReservationDialog(final TimeSlot timeSlot, String type) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Are you sure you would like to " + type + " your reservation?");
 
@@ -144,7 +170,7 @@ public class ReservationsFragment extends Fragment implements TimeSlotAdapterSho
 
         AlertDialog dialog = builder.create();
         dialog.show();
-    }
+    }*/
 
     private void navigateToMainMap() {
         // Ensure that we are attached to an Activity and the FragmentManager is not null
@@ -172,16 +198,16 @@ public class ReservationsFragment extends Fragment implements TimeSlotAdapterSho
         //get the key of the part of the data where
         //String key = userTimeslotsRef.orderByChild("startTime").equalTo(timeSlot.getStartTime()).get()
 
-        userTimeslotsRef.addValueEventListener(new ValueEventListener() {
+        userTimeslotsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                     // Here you can get the value of each child under 'timeSlots'
                     TimeSlot ts = childSnapshot.getValue(TimeSlot.class);
-                    if (timeSlot.getStartTime().equals(ts.getStartTime())) {
+                    if (ts != null && timeSlot.getStartTime().equals(ts.getStartTime())) {
                         String key = childSnapshot.getKey();
-                        Log.d("Please", key);
                         userTimeslotsRef.child(key).removeValue();
+                        break;
                     }
                 }
             }

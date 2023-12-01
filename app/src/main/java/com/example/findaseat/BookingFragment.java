@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -57,6 +58,8 @@ public class BookingFragment extends Fragment implements TimeSlotAdapter.OnReser
     private List<Integer> indoorSlots;
     private List<Integer> outdoorSlots;
 
+    private String buildingName;
+
     DatabaseReference ref;
 
     DatabaseReference usrdb;
@@ -94,6 +97,20 @@ public class BookingFragment extends Fragment implements TimeSlotAdapter.OnReser
 
 
             ref = database.getReference("buildings").child(building);
+
+            ref.child("buildingName").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String name = (String)dataSnapshot.getValue();
+                    buildingName = getFirstWord(name);
+                }
+
+                @Override
+                public void onCancelled(@androidx.annotation.NonNull DatabaseError error) {
+                    Log.e("BookingFragment", "Failed to read time slots", error.toException());
+                }
+            });
+
             usrdb = database.getReference("Users").child(usc_id);
         }
         // Initialize components and layout views
@@ -101,6 +118,18 @@ public class BookingFragment extends Fragment implements TimeSlotAdapter.OnReser
         return view;
 
     }
+
+    //gets first word of a string --> for building name
+    private String getFirstWord(String text) {
+        int index = text.indexOf(' ');
+        if (index > -1) { // Check if there is more than one word.
+            return text.substring(0, index).trim(); // Extract first word.
+        } else {
+            return text; // Text is the first word itself.
+        }
+    }
+
+
 
     /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -204,7 +233,7 @@ public class BookingFragment extends Fragment implements TimeSlotAdapter.OnReser
                                 Integer close = task2.getResult().getValue(Integer.class);
                                 if (close != null) {
                                     Log.d("CLOSE", close.toString());
-                                    adapter.setTimeSlots(indoorSlots, outdoorSlots, open, close, building);
+                                    adapter.setTimeSlots(indoorSlots, outdoorSlots, open, close, building, buildingName);
                                 }
                             } else {
                                 Log.e("firebase", "Error getting 'open' value", task.getException());
@@ -263,43 +292,32 @@ public class BookingFragment extends Fragment implements TimeSlotAdapter.OnReser
             userTimeslotsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    boolean handled = false; //false by default, only becomes true if is consecutive
-                    if (dataSnapshot.getValue() == null) //means none yet so can ofc make one then
-                    {
-                        handled = true;
-                        showReservationDialog(selectedTimeSlot);
-                    }
+                    int count = 0;
+                    boolean consecutive = false;
+                    //start at false so only one true needed to make true
+
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        count++;//have to go through entire loop to get it
                         TimeSlot existingTimeSlot = snapshot.getValue(TimeSlot.class);
 
                         //need to check are consecutive at same building
                         if (existingTimeSlot != null) {
-                            Log.d("existing end", existingTimeSlot.getEndTime().toString());
-                            Log.d("new start", selectedTimeSlot.getStartTime().toString());
-                            Log.d("building existing", existingTimeSlot.getBuilding().toString());
-                            Log.d("building new", selectedTimeSlot.getBuilding().toString());
                             if ((selectedTimeSlot.getEndTime().equals(existingTimeSlot.getStartTime()) ||
-                                    selectedTimeSlot.getStartTime().equals(existingTimeSlot.getEndTime())) && selectedTimeSlot.getBuilding().equals(existingTimeSlot.getBuilding()))  {
+                                    selectedTimeSlot.getStartTime().equals(existingTimeSlot.getEndTime())) && selectedTimeSlot.getBuilding().equals(existingTimeSlot.getBuilding())) {
                                 // This means the selected time slot is immediately before or after an existing reservation
-                                handled = true;
-                                showReservationDialog(selectedTimeSlot);
-                                break;
-                            }
-
-                            //if is same starting or same ending, means already have covering this one
-                            if (selectedTimeSlot.getStartTime().equals(existingTimeSlot.getStartTime()) ||
-                                    selectedTimeSlot.getEndTime().equals(existingTimeSlot.getEndTime())) {
-                                handled = true;
-                                Toast.makeText(getContext(), "You already have a reservation at this time.", Toast.LENGTH_SHORT).show();
-                                break;
+                                consecutive = true;
                             }
                         }
                     }
 
-                    //only case where get here is if none of them overlap in any way
-                    //so no full overlap or none that are right before or after either
-                    if (!handled) {
-                        Toast.makeText(getContext(), "You can only reserve consecutive time slots in the same building.", Toast.LENGTH_SHORT).show();
+                    //if is consecutive and count <= 4, or is first iteration, then can reserve
+                    if (consecutive && count < 4 || count == 0) {
+                        Log.d("count", String.valueOf(count));
+                        showReservationDialog(selectedTimeSlot);
+                    }
+                    else //everything else is can't
+                    {
+                        Toast.makeText(getContext(), "You can only reserve 4 consecutive time slots in the same building.", Toast.LENGTH_SHORT).show();
                     }
                 }
 

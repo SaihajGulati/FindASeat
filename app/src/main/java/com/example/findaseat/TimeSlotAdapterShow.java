@@ -1,6 +1,7 @@
 package com.example.findaseat;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,13 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +26,8 @@ public class TimeSlotAdapterShow extends RecyclerView.Adapter<TimeSlotAdapterSho
     TextView tvStartTime;
 
     TextView tvEndTime;
+
+    TextView tvBuilding;
     private OnButtonClickListener listener;
 
     public interface OnButtonClickListener {
@@ -58,15 +68,17 @@ public class TimeSlotAdapterShow extends RecyclerView.Adapter<TimeSlotAdapterSho
         public TimeSlotViewHolder(View itemView) {
             super(itemView);
             // Initialize your view items
-            changeButton = itemView.findViewById(R.id.btnChange); // Replace with your button ID
-            cancelButton = itemView.findViewById(R.id.btnCancel); // Replace with your button ID
+            changeButton = itemView.findViewById(R.id.btnChangeCancel); // Replace with your button ID
+            //cancelButton = itemView.findViewById(R.id.btnCancel); // Replace with your button ID
             tvStartTime = itemView.findViewById(R.id.tvStartTime);
             tvEndTime = itemView.findViewById(R.id.tvEndTime);
+            tvBuilding = itemView.findViewById(R.id.tvBuilding);
         }
 
         public void bind(final TimeSlot timeSlot, final OnButtonClickListener listener) {
             tvStartTime.setText(timeSlot.getStartTime());
             tvEndTime.setText(timeSlot.getEndTime());
+            tvBuilding.setText(timeSlot.getBuildingName());
             changeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -74,12 +86,12 @@ public class TimeSlotAdapterShow extends RecyclerView.Adapter<TimeSlotAdapterSho
                 }
             });
 
-            cancelButton.setOnClickListener(new View.OnClickListener() {
+            /*cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     listener.onCancelClick(timeSlot);
                 }
-            });
+            });*/
         }
     }
 }

@@ -68,10 +68,10 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
         return openSlots.size();
     }
 
-    public void setTimeSlots(List<Integer> indoorSlots, List<Integer> outdoorSlots, double open, double close, String building) {
+    public void setTimeSlots(List<Integer> indoorSlots, List<Integer> outdoorSlots, double open, double close, String building, String buildingName) {
 
         //must convert to timeslots and then put in here
-        List<TimeSlot> slots = makeTimeSlots(indoorSlots, outdoorSlots, open, close, building);
+        List<TimeSlot> slots = makeTimeSlots(indoorSlots, outdoorSlots, open, close, building, buildingName);
         for (int i = 0; i < slots.size(); i++)
         {
             if (slots.get(i).getIndoorSeats() > 0 || slots.get(i).getOutdoorSeats() > 0)
@@ -83,7 +83,7 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
         notifyDataSetChanged();
     }
 
-    private List<TimeSlot> makeTimeSlots(List<Integer> indoorSlots, List<Integer> outdoorSlots, double open, double close, String buildingId) {
+    private List<TimeSlot> makeTimeSlots(List<Integer> indoorSlots, List<Integer> outdoorSlots, double open, double close, String buildingId, String buildingName) {
 
         List<TimeSlot> times = new ArrayList<>();
 
@@ -108,7 +108,7 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
                     String start = convTimeToString(startTime);
                     String end = convTimeToString(endTime);
 
-                    TimeSlot ts = new TimeSlot(i, start, end, outdoorSlots.get(i), indoorSlots.get(i), buildingId);
+                    TimeSlot ts = new TimeSlot(i, start, end, outdoorSlots.get(i), indoorSlots.get(i), buildingId, buildingName);
                     times.add(ts);
                 }
             }
@@ -122,7 +122,7 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
                     String start = convTimeToString(startTime);
                     String end = convTimeToString(endTime);
 
-                    TimeSlot ts = new TimeSlot(i, start, end, outdoorSlots.get(i), indoorSlots.get(i), buildingId);
+                    TimeSlot ts = new TimeSlot(i, start, end, outdoorSlots.get(i), indoorSlots.get(i), buildingId, buildingName);
                     times.add(ts);
                 }
             }
