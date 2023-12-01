@@ -51,6 +51,10 @@ To run FindASeat on your local machine for development and testing purposes, fol
 ## Contact
 Project Link: 
 
+## 2.5 Updates 
+We have improved the functionality of our app since the 2.4 Submission. We fixed an app crash when a user clicked on a marker on the map, implemented time validation for reservations so that a user cannot book slots that have already passed for the day, enforced consecutive time slot bookings, restricted reservation duration to 2 hours, limited reservations to one active per user and finally added in real-time seat availability updates. We also added in some styling to make the app look more presentable. 
+
+
 
 ## Acknowledgements
 - [Firebase](https://firebase.google.com/)
