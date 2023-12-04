@@ -227,12 +227,10 @@ public class BookingFragment extends Fragment implements TimeSlotAdapter.OnReser
                 if (task.isSuccessful()) {
                     Integer open = task.getResult().getValue(Integer.class);
                     if (open != null) {
-                        Log.d("OPEN", open.toString());
                         ref.child("close").get().addOnCompleteListener(task2 -> {
                             if (task2.isSuccessful()) {
                                 Integer close = task2.getResult().getValue(Integer.class);
                                 if (close != null) {
-                                    Log.d("CLOSE", close.toString());
                                     adapter.setTimeSlots(indoorSlots, outdoorSlots, open, close, building, buildingName);
                                 }
                             } else {
@@ -312,7 +310,6 @@ public class BookingFragment extends Fragment implements TimeSlotAdapter.OnReser
 
                     //if is consecutive and count <= 4, or is first iteration, then can reserve
                     if (consecutive && count < 4 || count == 0) {
-                        Log.d("count", String.valueOf(count));
                         showReservationDialog(selectedTimeSlot);
                     }
                     else //everything else is can't

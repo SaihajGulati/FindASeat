@@ -95,7 +95,6 @@ public class MainActivity extends AppCompatActivity{
                 System.out.println("Database Error: " + databaseError.getMessage());
             }
         });
-        Log.d("TEST", "HI");
         setContentView(R.layout.activity_main);
 
         mapF = new MapFragment();

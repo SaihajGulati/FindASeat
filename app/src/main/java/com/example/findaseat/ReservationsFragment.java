@@ -85,7 +85,6 @@ public class ReservationsFragment extends Fragment implements TimeSlotAdapterSho
                     TimeSlot timeSlot = snapshot.getValue(TimeSlot.class);
                     timeSlots.add(timeSlot);
                 }
-                Log.d("timeslots", timeSlots.toString());
 
                 // Notify the adapter that the data has changed so the UI can be updated
                 adapter.notifyDataSetChanged();
