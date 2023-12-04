@@ -87,14 +87,14 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
 
         List<TimeSlot> times = new ArrayList<>();
 
-        DateFormat dateFormat = new SimpleDateFormat("hh:mm");
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm");
         Date date = Calendar.getInstance().getTime();
         String currDate = dateFormat.format(date).toString();
         //get the hours
         double currTime = parseDouble(currDate.substring(0,2));
         //get the minutes and then decimalize it and and add it to hours
         currTime += parseDouble(currDate.substring(3))/60;
-
+        Log.d("currTime", String.valueOf(currTime));
 
         //if is between opening and closing times, need to filter out ones before
         if (currTime > open && currTime < close) {
