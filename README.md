@@ -1,5 +1,3 @@
-# FindASeat
-
 FindASeat is an Android application designed to help users find and book seats in various buildings around the University of Southern California campus. Users can browse different buildings, check seat availability, and make reservations with ease.
 
 
